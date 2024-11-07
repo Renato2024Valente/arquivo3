@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda de Saúde Inteligente</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding-top: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .status-saude {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">Agenda de Saúde Inteligente</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="salvarComoPDF()">Salvar como PDF</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="deletarDados()">Deletar Todos os Dados</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Configurações</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="text-center">Controle de Saúde</h1>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Data e Hora:</span>
+            </div>
+            <input type="text" id="data-hora" class="form-control datetimepicker-input" data-toggle="datetimepicker" data-target="#data-hora" />
+        </div>
+        <div class="input-group mb-3">
+            <label for="pressao-manha" class="col-form-label">Pressão Arterial (Manhã):</label>
+            <input type="text" id="pressao-manha" class="form-control" placeholder="Ex: 120/80">
+        </div>
+        <div class="input-group mb-3">
+            <label for="pressao-tarde" class="col-form-label">Pressão Arterial (Tarde):</label>
+            <input type="text" id="pressao-tarde" class="form-control" placeholder="Ex: 120/80">
+        </div>
+        <div class="input-group mb-3">
+            <label for="pressao-noite" class="col-form-label">Pressão Arterial (Noite):</label>
+            <input type="text" id="pressao-noite" class="form-control" placeholder="Ex: 120/80">
+        </div>
+        <div class="input-group mb-3">
+            <label for="batimento" class="col-form-label">Batimento Cardíaco (bpm):</label>
+            <input type="number" id="batimento" class="form-control" placeholder="Ex: 70">
+        </div>
+        <div class="input-group mb-3">
+            <label for="peso" class="col-form-label">Peso Diário (kg):</label>
+            <input type="number" id="peso" class="form-control" placeholder="Ex: 70">
+        </div>
+        <div class="input-group mb-3">
+            <label for="glicose-semanal" class="col-form-label">Taxa de Glicose Semanal (mg/dL):</label>
+            <input type="number" id="glicose-semanal" class="form-control" placeholder="Ex: 110">
+        </div>
+        <div class="input-group mb-3">
+            <label for="alimentos" class="col-form-label">Total de Alimentos Ingeridos (g):</label>
+            <input type="number" id="alimentos" class="form-control" placeholder="Ex: 2000">
+        </div>
+        <div class="input-group mb-3">
+            <label for="altura" class="col-form-label">Altura (m):</label>
+            <input type="number" id="altura" class="form-control" placeholder="Ex: 1.75" step="0.01">
+        </div>
+        <div class="input-group mb-3">
+            <label for="iemc" class="col-form-label">Índice de Massa Corporal (IMC):</label>
+            <input type="text" id="iemc" class="form-control" readonly>
+        </div>
+        <button class="btn btn-primary" onclick="salvarDados()">Salvar Dados</button>
+
+        <div id="status-saude" class="status-saude"></div>
+
+        <table id="tabela-dados" class="table table-striped mt-4">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Data e Hora</th>
+                    <th>Pressão Manhã</th>
+                    <th>Pressão Tarde</th>
+                    <th>Pressão Noite</th>
+                    <th>Batimento (bpm)</th>
+                    <th>Peso (kg)</th>
+                    <th>Glicose (mg/dL)</th>
+                    <th>Alimentos (g)</th>
+                    <th>IMC</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dados inseridos dinamicamente aqui -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script>
+        $(function () {
+            $('#data-hora').datepicker({
+                format: 'dd/mm/yyyy',
+                todayHighlight: true,
+                autoclose: true
+            });
+        });
+
+        function calcularIMC(peso, altura) {
+            if (peso && altura) {
+                return (peso / (altura * altura)).toFixed(2);
+            }
+            return '';
+        }
+
+        function avaliarSaude(pesoAtual, pesoAnterior, glicose) {
+            let mensagem = "";
+
+            // Avaliação do peso
+            if (!pesoAnterior) {
+                mensagem += "Primeira medição registrada.\n";
+            } else if (pesoAtual < pesoAnterior) {
+                mensagem += "Você está emagrecendo. Continue assim para uma saúde melhor!\n";
+            } else if (pesoAtual > pesoAnterior) {
+                mensagem += "Você ganhou peso. Tente manter uma dieta equilibrada.\n";
+            } else {
+                mensagem += "Seu peso se manteve estável.\n";
+            }
+
+            // Avaliação da glicose
+            if (glicose < 70) {
+                mensagem += "Sua taxa de glicose está baixa. Consulte um médico para avaliar.\n";
+            } else if (glicose >= 70 && glicose <= 99) {
+                mensagem += "Sua taxa de glicose está normal. Mantenha uma dieta saudável!\n";
+            } else if (glicose >= 100 && glicose <= 125) {
+                mensagem += "Você está na faixa pré-diabética. Consulte um médico para acompanhamento.\n";
+            } else {
+                mensagem += "Você está na faixa diabética. É importante buscar orientação médica.\n";
+            }
+
+            return mensagem;
+        }
+
+        function salvarDados() {
+            const dataHora = document.getElementById('data-hora').value;
+            const pressaoManha = document.getElementById('pressao-manha').value;
+            const pressaoTarde = document.getElementById('pressao-tarde').value;
+            const pressaoNoite = document.getElementById('pressao-noite').value;
+            const batimento = document.getElementById('batimento').value;
+            const peso = document.getElementById('peso').value;
+            const glicoseSemanal = document.getElementById('glicose-semanal').value;
+            const alimentos = document.getElementById('alimentos').value;
+            const altura = document.getElementById('altura').value;
+
+            if (!dataHora || !pressaoManha || !pressaoTarde || !pressaoNoite || !batimento || !peso || !glicoseSemanal || !alimentos || !altura) {
+                alert('Todos os campos devem ser preenchidos');
+                return;
+            }
+
+            const imc = calcularIMC(peso, altura);
+            document.getElementById('iemc').value = imc;
+
+            let dadosExistentes = localStorage.getItem('dadosSaude');
+            dadosExistentes = dadosExistentes ? JSON.parse(dadosExistentes) : [];
+            const pesoAnterior = dadosExistentes.length > 0 ? dadosExistentes[dadosExistentes.length - 1].peso : null;
+
+            const statusSaude = avaliarSaude(peso, pesoAnterior, glicoseSemanal);
+            document.getElementById('status-saude').innerText = statusSaude;
+
+            const dados = {
+                dataHora: dataHora,
+                pressaoManha: pressaoManha,
+                pressaoTarde: pressaoTarde,
+                pressaoNoite: pressaoNoite,
+                batimento: batimento,
+                peso: peso,
+                glicoseSemanal: glicoseSemanal,
+                alimentos: alimentos,
+                imc: imc
+            };
+
+            dadosExistentes.push(dados);
+            localStorage.setItem('dadosSaude', JSON.stringify(dadosExistentes));
+            alert('Dados salvos com sucesso!');
+
+            document.getElementById('data-hora').value = '';
+            document.getElementById('pressao-manha').value = '';
+            document.getElementById('pressao-tarde').value = '';
+            document.getElementById('pressao-noite').value = '';
+            document.getElementById('batimento').value = '';
+            document.getElementById('peso').value = '';
+            document.getElementById('glicose-semanal').value = '';
+            document.getElementById('alimentos').value = '';
+            document.getElementById('altura').value = '';
+            document.getElementById('iemc').value = '';
+
+            atualizarTabela();
+        }
+
+        function atualizarTabela() {
+            const dadosExistentes = localStorage.getItem('dadosSaude');
+            const tabelaBody = document.getElementById('tabela-dados').getElementsByTagName('tbody')[0];
+            tabelaBody.innerHTML = '';
+
+            if (dadosExistentes) {
+                const dadosArray = JSON.parse(dadosExistentes);
+                dadosArray.forEach(dados => {
+                    const linha = tabelaBody.insertRow();
+                    linha.insertCell(0).innerText = dados.dataHora;
+                    linha.insertCell(1).innerText = dados.pressaoManha;
+                    linha.insertCell(2).innerText = dados.pressaoTarde;
+                    linha.insertCell(3).innerText = dados.pressaoNoite;
+                    linha.insertCell(4).innerText = dados.batimento;
+                    linha.insertCell(5).innerText = dados.peso;
+                    linha.insertCell(6).innerText = dados.glicoseSemanal;
+                    linha.insertCell(7).innerText = dados.alimentos;
+                    linha.insertCell(8).innerText = dados.imc;
+                });
+            }
+        }
+
+        function salvarComoPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("Agenda de Saúde Inteligente", 10, 10);
+
+            let dadosExistentes = localStorage.getItem('dadosSaude');
+            dadosExistentes = dadosExistentes ? JSON.parse(dadosExistentes) : [];
+
+            let linhaY = 20;
+            dadosExistentes.forEach((dados, index) => {
+                doc.text(`Registro ${index + 1}`, 10, linhaY);
+                linhaY += 10;
+                doc.text(`Data e Hora: ${dados.dataHora}`, 10, linhaY);
+                linhaY += 10;
+                doc.text(`Pressão Manhã: ${dados.pressaoManha}`, 10, linhaY);
+                linhaY += 10;
+                doc.text(`Pressão Tarde: ${dados.pressaoTarde}`, 10, linhaY);
+                linhaY += 10;
+                doc.text(`Pressão Noite: ${dados.pressaoNoite}`, 10, linhaY);
+                linhaY += 10;
+                doc.text(`Batimento (bpm): ${dados.batimento}`, 10, linhaY);
+                linhaY += 10;
+                doc.text(`Peso (kg): ${dados.peso}`, 10, linhaY);
+                linhaY += 10;
+                doc.text(`Glicose (mg/dL): ${dados.glicoseSemanal}`, 10, linhaY);
+                linhaY += 10;
+                doc.text(`Alimentos (g): ${dados.alimentos}`, 10, linhaY);
+                linhaY += 10;
+                doc.text(`IMC: ${dados.imc}`, 10, linhaY);
+                linhaY += 20;
+            });
+
+            doc.save("agenda_saude.pdf");
+        }
+
+        function deletarDados() {
+            if (confirm('Tem certeza de que deseja deletar todos os dados salvos?')) {
+                localStorage.removeItem('dadosSaude');
+                atualizarTabela();
+                alert('Todos os dados foram deletados com sucesso!');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', atualizarTabela);
+    </script>
+</body>
+</html>
